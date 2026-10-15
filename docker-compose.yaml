@@ -1,0 +1,38 @@
+services:
+  # PostgreSQL service
+  postgres:
+    container_name: postgres-bigdata-p2-itaca
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PW}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    networks:
+      - db-network
+
+  # PGAdmin service
+  pgadmin:
+    container_name: pgadmin-bigdata-p2-itaca
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_MAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PW}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - db-network
+
+networks:
+  db-network:
+    driver: bridge
+    name: network-bigdata-p2-itaca
+
+volumes:
+  pgdata:
+  pgadmin_data:
