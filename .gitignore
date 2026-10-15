@@ -1,0 +1,13 @@
+# Ignore environment variable files
+.env
+
+
+#Ignore the data/raw content
+data/raw/**/*
+!data/raw/.gitkeep
+# Ignore the data/curated content
+data/curated/**/*
+!data/curated/.gitkeep
+# Ignore the data/staged content
+data/staged/**/*
+!data/staged/.gitkeep
