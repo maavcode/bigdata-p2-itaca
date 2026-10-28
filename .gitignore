@@ -1,7 +1,9 @@
 # Ignore environment variable files
 .env
 
-
+# Ignore the data/exported content
+data/exported/**/*
+!data/exported/.gitkeep
 #Ignore the data/raw content
 data/raw/**/*
 !data/raw/.gitkeep
@@ -11,3 +13,6 @@ data/curated/**/*
 # Ignore the data/staged content
 data/staged/**/*
 !data/staged/.gitkeep
+
+# Ignore virtual environment directories
+.venv
