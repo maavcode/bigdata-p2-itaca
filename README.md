@@ -17,13 +17,14 @@ graph LR
 
 | Fuente | URL / origen | Formato | Frecuencia de actualización | Licencia | Última ingesta |
 |---|---|---|---|---|---|
-| ITACA (Conselleria de Educación) | Facilitada por el docente | SQL | Única | — | — |
+| ITACA (Conselleria de Educación) | Facilitada por el docente | SQL | Única | — | 2026-10-29 |
 
 ## Estructura del repositorio
 
 | Carpeta / fichero | Contenido |
 |---|---|
 | `ingesta/` | Scripts Python de lectura de PostgreSQL y conversión a JSON |
+| `ingesta/ingesta_itaca_bd.py` | Lee 4 tablas de ITACA, anonimiza el NIA y escribe los JSON |
 | `etl/` | Transformaciones con Spark |
 | `dashboard/` | Informe de Power BI |
 | `data/exported/` | Scripts SQL de ITACA |
@@ -63,13 +64,22 @@ PostgreSQL queda expuesto en `localhost:5432` y PGAdmin en `localhost:5050`.
 
 ### Bloque 1 · Ingesta
 
-**Objetivo:**
+**Objetivo:** leer las tablas de ITACA desde PostgreSQL y dejar un JSON por tabla en `data/raw/`, con el NIA anonimizado.
 
 **Pasos realizados:**
 
-**Problemas encontrados y solución:**
+- Levantado el servicio PostgreSQL con `docker compose up -d` y cargar los datos.
+- Instalar `psycopg2-binary` en el entorno virtual.
+- Escribir `ingesta/ingesta_itaca_bd.py`: conexión con `POSTGRESQL`, leer la base de datos, hashear el NIA de la tabla alumnos y calificaciones y `logging` para capturar logs y errores del script.
+- Ejecutar desde la raíz: `.venv/bin/python ingesta/ingesta_itaca_bd.py`.
 
-**Resultado:**
+**Problemas encontrados y solución:** --
+
+**Resultado:** 
+
+- 4 ficheros JSON en `data/raw/` con 7.193 alumnos, 106.814 calificaciones, 1.688 contenidos y 413 cursos; los recuentos coinciden con `count(*)`. 
+- Ningún NIA original aparece en `alumnos` ni en `calificaciones`. 
+- Con el contenedor parado el script termina con código 1.
 
 ## Decisiones técnicas
 
@@ -78,6 +88,8 @@ PostgreSQL queda expuesto en `localhost:5432` y PGAdmin en `localhost:5050`.
 | PostgreSQL como almacenamiento | MongoDB | La fuente ya es relacional, así que se conserva el esquema SQL |
 | Entorno con Docker Compose | Instalar PostgreSQL en local | Entorno reproducible: cualquiera lo levanta con un solo comando |
 | Ramas `main` y `develop` | Trabajar solo en `main` | Separar el resultado final del desarrollo |
+| Anonimizar solo el NIA con `sha256(str(nia))[:10]` | No hashear nada | Proteger los datos personales de los Alumnos |
+| `psycopg2` para leer de PostgreSQL | JDBC | Es Python nativo y no requiere drivers Java adicionales |
 
 ## Incidencias resueltas
 
